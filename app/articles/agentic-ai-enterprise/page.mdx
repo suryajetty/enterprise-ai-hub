@@ -1,0 +1,77 @@
+---
+title: "Agentic AI Explained: From Middleware to LangGraph"
+description: "Why the enterprise doesn't need more AI agents—it needs managed, observable agentic workflows."
+date: "2026-08-12"
+tags: ["AI Agents", "Architecture", "LangGraph"]
+---
+
+import CheatSheetCard from '@/components/mdx/CheatSheetCard';
+import MermaidDiagram from '@/components/mdx/MermaidDiagram';
+
+# Agentic AI Explained: From Middleware to LangGraph
+
+Transitioning from deterministic middleware to probabilistic AI feels like stepping into a new world. When building autonomous systems, you have to shift your mindset from rigid routing to dynamic reasoning. Recently, while deep in an intensive sprint on vibe coding and agentic patterns, it hit me: the enterprise doesn't need *more* agents; it needs *managed* agents.
+
+Here is how we bring order to the chaos using LangGraph.
+
+## The Agentic Routing Architecture
+
+In traditional middleware like TIBCO, a router moves a message based on a static XML tag. In Agentic AI, a **Supervisor Agent** evaluates the user's intent and dynamically routes the task to a specialized sub-agent (like a SQL Agent or a RAG Agent).
+
+<MermaidDiagram chart={`
+graph TD
+    User(("👤 User Query")) --> Supervisor{"🧠 Supervisor Agent"}
+    
+    Supervisor -- "Needs Data" --> SQLAgent["📊 SQL DB Agent"]
+    Supervisor -- "Needs Docs" --> RAGAgent["📚 RAG Agent"]
+    Supervisor -- "Needs API Action" --> APITool["🔌 ServiceNow Agent"]
+    
+    SQLAgent --> Formatter["📝 Output Formatter"]
+    RAGAgent --> Formatter
+    APITool --> Formatter
+    
+    Formatter --> Response(("✅ Final Response"))
+`} />
+
+<CheatSheetCard 
+  title="LangGraph Enterprise Cheatsheet" 
+  href="/downloads/langgraph-cheatsheet.pdf" 
+/>
+
+## Building the State Graph
+
+To prevent agents from getting stuck in infinite loops (a common failure state), we use LangGraph to strictly define the state and edges of our workflow.
+
+```python
+from langgraph.graph import StateGraph, END
+from typing import TypedDict, Annotated
+import operator
+
+# 1. Define the State
+class AgentState(TypedDict):
+    input: str
+    agent_outcome: str
+    intermediate_steps: Annotated[list, operator.add]
+
+# 2. Initialize the Graph
+workflow = StateGraph(AgentState)
+
+# 3. Add Nodes (The specialized agents)
+workflow.add_node("supervisor", supervisor_agent)
+workflow.add_node("sql_expert", sql_agent)
+workflow.add_node("rag_expert", rag_agent)
+
+# 4. Define Conditional Edges (The Router)
+workflow.add_conditional_edges(
+    "supervisor",
+    route_to_expert,
+    {
+        "sql": "sql_expert",
+        "rag": "rag_expert",
+        "finish": END
+    }
+)
+
+# 5. Set Entry Point and Compile
+workflow.set_entry_point("supervisor")
+enterprise_app = workflow.compile()

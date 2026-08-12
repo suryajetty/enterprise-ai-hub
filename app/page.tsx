@@ -1,69 +1,116 @@
-import Image from "next/image";
+import Link from 'next/link';
+import { getAllArticles } from '@/lib/articles';
 
-export default function Home() {
+export default function Home({
+  searchParams,
+}: {
+  searchParams: { tag?: string };
+}) {
+  const articles = getAllArticles();
+  
+  // Extract all unique tags from the articles and sort them alphabetically
+  const allTags = Array.from(
+    new Set(articles.flatMap((article) => article.tags))
+  ).sort();
+
+  const selectedTag = searchParams.tag;
+
+  // Filter articles if a tag is clicked, otherwise show all
+  const filteredArticles = selectedTag
+    ? articles.filter((article) => article.tags.includes(selectedTag))
+    : articles;
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
+    <main className="min-h-screen bg-slate-950 px-6 py-12 text-slate-200">
+      <div className="mx-auto max-w-4xl">
+        {/* Hero Section */}
+        <header className="mb-12 border-b border-cyan-900/50 pb-12">
+          <h1 className="mb-4 text-4xl font-bold tracking-tight text-white md:text-6xl">
+            Enterprise AI <span className="text-cyan-400">Explained Visually.</span>
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="text-xl text-slate-400">
+            Real-world architectures, code, and lessons learned from deploying AI into production environments.
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+        </header>
+
+        {/* Tag Filter Menu */}
+        <section className="mb-10">
+          <div className="flex flex-wrap gap-3">
+            <Link
+              href="/"
+              className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+                !selectedTag
+                  ? 'bg-cyan-600 text-white'
+                  : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+              }`}
+            >
+              All Blueprints
+            </Link>
+            
+            {allTags.map((tag) => (
+              <Link
+                key={tag}
+                href={`/?tag=${encodeURIComponent(tag)}`}
+                className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+                  selectedTag === tag
+                    ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-900/50'
+                    : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                }`}
+              >
+                {tag}
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        {/* Article Feed */}
+        <section>
+          <div className="mb-6 flex items-center justify-between">
+            <h2 className="text-2xl font-semibold text-white">
+              {selectedTag ? `Results for "${selectedTag}"` : 'Latest Blueprints'}
+            </h2>
+            <span className="text-sm text-slate-500">
+              {filteredArticles.length} {filteredArticles.length === 1 ? 'article' : 'articles'}
+            </span>
+          </div>
+          
+          <div className="grid gap-6">
+            {filteredArticles.length > 0 ? (
+              filteredArticles.map((article) => (
+                <Link href={`/articles/${article.slug}`} key={article.slug} className="group block">
+                  <article className="rounded-xl border border-slate-800 bg-slate-900/50 p-6 transition-all hover:border-cyan-500/50 hover:bg-slate-900">
+                    <div className="mb-3 flex items-center justify-between">
+                      <span className="text-sm text-cyan-400">{article.date}</span>
+                      <div className="flex gap-2">
+                        {article.tags.map((tag) => (
+                          <span
+                            key={tag}
+                            className={`rounded-full px-3 py-1 text-xs ${
+                              selectedTag === tag
+                                ? 'bg-cyan-900/50 text-cyan-300 border border-cyan-500/30'
+                                : 'bg-slate-800 text-slate-300'
+                            }`}
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <h3 className="mb-2 text-xl font-bold text-white group-hover:text-cyan-300">
+                      {article.title}
+                    </h3>
+                    <p className="text-slate-400">{article.description}</p>
+                  </article>
+                </Link>
+              ))
+            ) : (
+              <div className="rounded-xl border border-dashed border-slate-700 p-12 text-center text-slate-500">
+                No articles found for this category yet.
+              </div>
+            )}
+          </div>
+        </section>
+      </div>
+    </main>
   );
 }

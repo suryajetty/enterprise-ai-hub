@@ -1,0 +1,53 @@
+---
+title: "RAG in Production: The Hard Parts Everyone Skips"
+description: "A deep dive into building enterprise-grade Retrieval-Augmented Generation systems. A commitment to continuous learning beyond the prototype phase."
+date: "2026-08-12"
+tags: ["Architecture", "Enterprise", "AI Agents"]
+---
+
+import CheatSheetCard from '@/components/mdx/CheatSheetCard';
+import MermaidDiagram from '@/components/mdx/MermaidDiagram';
+
+# RAG in Production: The Hard Parts Everyone Skips
+
+Most tutorials show you how to build a RAG app in 5 lines of Python. Here is what happens when you deploy that to an Enterprise environment.
+
+## The Production Architecture
+
+Notice how the LLM is shielded by the API Gateway and Guardrail nodes. This prevents PII leakage and controls costs.
+
+<MermaidDiagram chart={`
+graph TD
+    User(("👤 User")) --> API[/"🛡️ API Gateway"/]
+    API --> Cache[("⚡ Redis Cache")]
+    Cache -- "Miss" --> Agent["🧠 LangGraph Orchestrator"]
+    Agent --> Guard["🛑 PII Guardrails"]
+    Guard --> VectorDB[("📊 Milvus")]
+    Agent --> LLM["🤖 Azure OpenAI"]
+`} />
+
+<CheatSheetCard 
+  title="Download the full RAG Blueprint" 
+  href="/downloads/rag-blueprint.pdf" 
+/>
+
+## The Implementation
+
+To connect to your vector database securely, use the following pattern:
+
+```python
+import os
+from langchain_openai import AzureOpenAIEmbeddings
+from langchain_community.vectorstores import Milvus
+
+# Always pull credentials from secure environment variables, never hardcode
+embeddings = AzureOpenAIEmbeddings(
+    azure_deployment="text-embedding-ada-002",
+    api_version="2023-05-15"
+)
+
+vector_db = Milvus(
+    embedding_function=embeddings,
+    connection_args={"uri": os.getenv("MILVUS_URI"), "token": os.getenv("MILVUS_TOKEN")},
+    collection_name="enterprise_knowledge_base"
+)
