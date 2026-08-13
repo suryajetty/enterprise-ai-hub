@@ -1,0 +1,70 @@
+---
+title: "ESB vs. AI Agents: The Evolution of Routing"
+description: "Why traditional Enterprise Service Buses (ESBs) are making way for intent-driven Agentic Orchestration."
+date: "2026-08-14"
+tags: ["Architecture", "AI Agents", "Middleware"]
+---
+
+import MermaidDiagram from '@/components/mdx/MermaidDiagram';
+
+# ESB vs. AI Agents: The Evolution of Routing
+
+If you have spent any time in enterprise middleware, you know the Enterprise Service Bus (ESB). Tools like MuleSoft, TIBCO, or IBM App Connect have run the world's backend systems for decades.
+
+Their job is simple: **Receive a payload, evaluate a static rule, transform the data, and route it to an endpoint.**
+
+But as we transition into the AI era, deterministic routing is hitting its limits. Unstructured data (emails, PDFs, customer chat) doesn't fit neatly into an XML schema.
+
+Enter the **Agentic Orchestrator**.
+
+---
+
+## The Deterministic Router (ESB)
+
+In traditional middleware, routing is explicit. 
+
+If a message arrives, the router checks a specific header (e.g., `OrderType = B2B`). If true, it goes to SAP. If false, it goes to Salesforce. If the header is missing, the transaction crashes.
+
+<MermaidDiagram chart={`
+graph TD
+    A[Incoming JSON Payload] --> B{Static Router}
+    B -- "if type == 'invoice'" --> C[Finance API]
+    B -- "if type == 'ticket'" --> D[ServiceNow]
+    B -- "Missing type field" --> E((Error Queue))
+    
+    style E fill:#451a1a,stroke:#ef4444,stroke-width:2px
+`} />
+
+**Pros:** 100% predictable, highly auditable, millisecond latency.
+**Cons:** Extremely brittle. It cannot handle ambiguity or unstructured data.
+
+---
+
+## The Probabilistic Router (AI Agent)
+
+Agentic orchestration (using frameworks like LangGraph) introduces a cognitive layer to routing. 
+
+Instead of looking for a hardcoded JSON field, a **Supervisor Agent** (an LLM) evaluates the *semantic intent* of the incoming payload.
+
+<MermaidDiagram chart={`
+graph TD
+    A[Unstructured User Email] --> B{"🧠 Supervisor Agent"}
+    B -. "I need to look up a policy" .-> C[RAG Retriever Tool]
+    B -. "I need to check ticket status" .-> D[Jira API Tool]
+    C --> E[Synthesize Final Response]
+    D --> E
+`} />
+
+If a customer emails: *"I haven't received my refund for the broken laptop, what is your policy?"*
+
+The Supervisor Agent doesn't crash because there is no `type` field. It understands the context, decides to route a query to the **RAG Tool** (to get the refund policy), and then routes to the **API Tool** (to check the order status), before combining both into a cohesive answer.
+
+## The Middleware Engineer's Advantage
+
+Many AI developers struggle to move agents to production because they treat them like magic black boxes.
+
+Middleware engineers treat agents like **compute nodes in a distributed system**. 
+
+If you know how to build a robust ESB pipeline with dead-letter queues, retry policies, and circuit breakers, you already know exactly what is missing from most LangChain tutorials. 
+
+The architecture principles haven't changed. Only the routing engine has.

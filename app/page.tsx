@@ -1,21 +1,24 @@
 import Link from 'next/link';
 import { getAllArticles } from '@/lib/articles';
+import Newsletter from '@/components/layout/newsletter';
 
-export default function Home({
+export default async function Home({
   searchParams,
 }: {
-  searchParams: { tag?: string };
+  searchParams: Promise<{ tag?: string }>; // <-- searchParams is now a Promise
 }) {
   const articles = getAllArticles();
   
-  // Extract all unique tags from the articles and sort them alphabetically
+  // 1. Await the params before using them
+  const resolvedParams = await searchParams;
+  const selectedTag = resolvedParams.tag;
+
+  // 2. Extract all unique tags from the articles and sort them alphabetically
   const allTags = Array.from(
     new Set(articles.flatMap((article) => article.tags))
   ).sort();
 
-  const selectedTag = searchParams.tag;
-
-  // Filter articles if a tag is clicked, otherwise show all
+  // 3. Filter articles if a tag is clicked, otherwise show all
   const filteredArticles = selectedTag
     ? articles.filter((article) => article.tags.includes(selectedTag))
     : articles;
@@ -46,7 +49,7 @@ export default function Home({
             >
               All Blueprints
             </Link>
-            
+
             {allTags.map((tag) => (
               <Link
                 key={tag}
@@ -64,7 +67,7 @@ export default function Home({
         </section>
 
         {/* Article Feed */}
-        <section>
+        <section className="mb-16">
           <div className="mb-6 flex items-center justify-between">
             <h2 className="text-2xl font-semibold text-white">
               {selectedTag ? `Results for "${selectedTag}"` : 'Latest Blueprints'}
@@ -73,7 +76,7 @@ export default function Home({
               {filteredArticles.length} {filteredArticles.length === 1 ? 'article' : 'articles'}
             </span>
           </div>
-          
+
           <div className="grid gap-6">
             {filteredArticles.length > 0 ? (
               filteredArticles.map((article) => (
@@ -87,7 +90,7 @@ export default function Home({
                             key={tag}
                             className={`rounded-full px-3 py-1 text-xs ${
                               selectedTag === tag
-                                ? 'bg-cyan-900/50 text-cyan-300 border border-cyan-500/30'
+                                ? 'border border-cyan-500/30 bg-cyan-900/50 text-cyan-300'
                                 : 'bg-slate-800 text-slate-300'
                             }`}
                           >
@@ -110,6 +113,9 @@ export default function Home({
             )}
           </div>
         </section>
+
+        {/* Newsletter Section */}
+        <Newsletter />
       </div>
     </main>
   );
