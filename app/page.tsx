@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import Link from 'next/link';
 import { getAllArticles } from '@/lib/articles';
 import Newsletter from '@/components/layout/newsletter';
