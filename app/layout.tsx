@@ -28,7 +28,7 @@ export default function RootLayout({
               <Link href="/" className="transition-colors hover:text-cyan-400">
                 Blueprints
               </Link>
-              <Link href="www.linkedin.com/in/surya-j-19s26a" target="_blank" className="transition-colors hover:text-cyan-400">
+              <Link href="https://www.linkedin.com/in/surya-j-19s26a/" target="_blank" className="transition-colors hover:text-cyan-400">
                 LinkedIn
               </Link>
               <Link href="https://github.com/suryajetty" target="_blank" className="transition-colors hover:text-cyan-400">
