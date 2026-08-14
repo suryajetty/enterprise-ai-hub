@@ -1,0 +1,56 @@
+---
+title: "Day 10 — Deterministic vs Probabilistic Routing"
+description: "Why deterministic routing is fading and probabilistic routing powered by AI is taking over."
+date: "2026-08-14"
+tags: ["Routing", "Architecture", "Phase 1"]
+---
+
+import MermaidDiagram from '@/components/mdx/MermaidDiagram';
+
+# Day 10 — Deterministic vs Probabilistic Routing
+
+Deterministic routing (the ESB pattern) is an engineering staple: messages follow explicit rules and policies, which makes systems predictable and auditable. But when inputs are unstructured — emails, documents, or free-text user intents — rigid rules break down.
+
+Probabilistic routing treats routing as an inference problem: given an input, infer intent or intent-probabilities and route to the component with the highest expected value.
+
+## Deterministic routing: strengths and failure modes
+
+- Predictable: easy to audit, test, and monitor.
+- Fast: sub-millisecond routing decisions.
+- Failure modes: brittle to missing fields, schema drift, and ambiguous inputs.
+
+## Probabilistic routing: strengths and operational needs
+
+- Robust to ambiguity: uses semantic signals and confidence scores.
+- Requires observability: you must capture decisions, confidence, and fallbacks.
+- Needs governance: model drift monitoring and rollback procedures.
+
+<MermaidDiagram chart={`
+graph LR
+	Input[Unstructured Input] --> Model{Intent Model}
+	Model -- high confidence --> ServiceA[Service A]
+	Model -- low confidence --> HumanReview[Human-in-the-loop]
+	Model -- medium confidence --> ServiceB[Service B]
+`} />
+
+## Practical recipe to migrate
+
+1. Start with a hybrid approach: deterministic rules first, probabilistic model for fallbacks.
+2. Add confidence thresholds and an audit stream of decisions.
+3. Run backtests against historical traffic to calibrate thresholds and SLAs.
+
+## Example: routing email requests
+
+When an incoming email arrives, a deterministic system looks for structured headers. A probabilistic router instead extracts intent embeddings and scores candidate handlers (billing, support, legal) and routes to the top-scoring handler, optionally recording the top-k candidates for later analysis.
+
+```ts
+// Pseudocode: routing by score
+const scores = handlers.map(h => ({ h, score: model.score(input, h) }));
+const best = scores.sort((a,b)=>b.score-a.score)[0];
+if (best.score < CONFIDENCE_THRESHOLD) triggerHumanReview(input);
+else routeTo(best.h);
+```
+
+## Takeaway
+
+Probabilistic routing is not a replacement for engineering rigor — it complements it. Keep deterministic fallbacks, strict auditing, and automated drift detection, and you'll get the best of both worlds.

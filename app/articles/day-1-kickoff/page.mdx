@@ -1,0 +1,43 @@
+---
+title: "Day 1 — The Kickoff: Announcement & Mission"
+description: "The kickoff for the 100-day Enterprise AI blueprint series: goals, audience, and cadence."
+date: "2026-08-14"
+tags: ["Series", "Phase 1", "Kickoff"]
+---
+
+import MermaidDiagram from '@/components/mdx/MermaidDiagram';
+
+# Day 1 — The Kickoff: Announcement & Mission
+
+Welcome to the 100-day Enterprise AI Blueprint. Over the next 100 days we’ll translate classical middleware and platform engineering patterns into production-ready AI workflows.
+
+This series is for architects, platform engineers, and middleware practitioners who are migrating existing systems to AI-first designs. Each post is concise, prescriptive, and includes architectures, operational checklists, and code snippets you can re-use.
+
+## What to expect
+
+- Five phases covering architecture, RAG, agentic workflows, LLMOps, and organizational change.
+- Twice-weekly practical essays with a downloadable blueprint at the end of each phase.
+- Concrete artifacts: diagrams, code snippets, and a final compiled PDF.
+
+<MermaidDiagram chart={`
+graph LR
+	Kickoff[Day 1] --> Phase1[Phase 1: Paradigm Shift]
+	Phase1 --> Phase2[Phase 2: RAG in Production]
+	Phase2 --> Phase3[Phase 3: Agentic Workflows]
+	Phase3 --> Phase4[Phase 4: LLMOps]
+	Phase4 --> Phase5[Phase 5: Forward Deployed]
+`} />
+
+## Mission
+
+Teach engineers to stop treating models as black boxes. Instead, design observable, testable, and auditable AI systems that fit enterprise SLAs and compliance constraints.
+
+## Quick checklist (first 7 days)
+
+1. Inventory system-critical integrations and data sources.
+2. Identify privacy-sensitive domains and regulatory constraints.
+3. Prototype a small RAG flow with logging and synthetic tests.
+
+In the next installment (Day 5) we’ll compare ESBs with AI agent orchestration and show where classical patterns still apply.
+
+> If you want me to expand this into a launch announcement email or PDF, say the word and I’ll generate it.

@@ -1,0 +1,39 @@
+---
+title: "Day 25 — Vector Databases: Milvus vs Pinecone"
+description: "An enterprise comparison between Milvus and Pinecone for scale, security, and operational needs."
+date: "2026-08-14"
+tags: ["RAG", "Vector DB", "Phase 2"]
+---
+
+# Day 25 — Vector Databases: Milvus vs Pinecone
+
+Vector databases power retrieval in RAG systems. Choosing between Milvus (self-hosted) and Pinecone (managed) depends on scale, security, and operational constraints.
+
+## Quick comparison
+
+- **Milvus (self-hosted):** Full control, no vendor lock-in, potentially lower long-term cost at scale, but requires operations expertise.
+- **Pinecone (managed):** Fast time-to-market, SLA-backed performance, and simpler developer experience; potentially higher recurring costs.
+
+### Key factors to evaluate
+
+- **Throughput & latency:** Both can be tuned; benchmark with realistic shard counts and vector sizes.
+- **Security & compliance:** Milvus gives you control for on-prem deployments; Pinecone provides VPC peering and encryption-in-transit options.
+- **Multi-tenancy:** Pinecone offers multi-tenant abstractions; Milvus requires you to implement tenant isolation.
+
+## Operational checklist
+
+1. Simulate concurrent queries at expected QPS with representative vectors.
+2. Measure index build times and reindexing windows for nightly updates.
+3. Validate backup, restore, and disaster recovery procedures.
+
+## Example: hybrid approach
+
+Start with Pinecone for prototyping to reduce ops overhead. Migrate to Milvus for on-prem or cost-optimized production after you validate access patterns and scale.
+
+## Benchmarks to collect
+
+- recall@k on a representative corpus
+- 95th/99th percentile latency for common vector sizes
+- cost per million queries (approx)
+
+If you want, I can add a reproducible benchmark script to this repo that tests both providers with your corpora.

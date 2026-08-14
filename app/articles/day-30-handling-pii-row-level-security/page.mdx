@@ -1,0 +1,55 @@
+---
+title: "Day 30 — Handling PII & Row-Level Security in RAG"
+description: "Strategies for protecting PII and enforcing row-level access controls in retrieval-augmented generation pipelines."
+date: "2026-08-14"
+tags: ["RAG", "Security", "Phase 2"]
+---
+
+import MermaidDiagram from '@/components/mdx/MermaidDiagram';
+
+# Day 30 — Handling PII & Row-Level Security in RAG
+
+Protecting sensitive data is the biggest operational hurdle when deploying RAG at scale. The combination of embeddings and external LLMs requires careful data governance.
+
+## Threat model
+
+- Data exfiltration via prompts/responses
+- Unauthorized retrieval of documents across tenants
+- Accidental exposure of PII in summarized outputs
+
+## Defensive patterns
+
+1. **Redaction before indexing** — remove or tokenize PII before embeddings are created.
+2. **Attribute-based retrieval** — include ACL metadata in index records and filter retrieval by user attributes.
+3. **Row-level security** — ensure your retriever and vector store support metadata or per-document tenant IDs.
+
+<MermaidDiagram chart={`
+graph TD
+	User --> App
+	App --> Retriever{Retriever + ACL Filter}
+	Retriever --> VectorDB
+	VectorDB --> FilteredResults
+	FilteredResults --> LLM
+`} />
+
+## Implementation checklist
+
+- Add `tenant_id`, `sensitivity_level`, and `redacted` flags to every document stored in the vector index.
+- Enforce filters in the retrieval query: `where tenant_id = X and sensitivity_level <= user_clearance`.
+- Store original documents in an encrypted store and record an auditable retrieval log.
+
+## Example: redaction pipeline
+
+```python
+def redact_and_index(doc):
+		redacted, pii = pii_redactor(doc)
+		vec = embedder.embed(redacted)
+		index.upsert(id=doc.id, vector=vec, metadata={"tenant":doc.tenant, "sensitivity":doc.level})
+
+```
+
+## Auditing
+
+Keep an immutable log of: retrieval queries, top-k results returned, model prompts, and responses. This enables post-hoc investigations and regulatory compliance.
+
+If you want, I’ll add a proof-of-concept redact-and-index script to this repo and wiring for tenant-aware retrieval.

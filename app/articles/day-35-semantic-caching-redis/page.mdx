@@ -1,0 +1,66 @@
+---
+title: "Day 35 — Semantic Caching with Redis to Cut Token Costs"
+description: "How semantic caching reduces LLM calls and saves tokens using Redis-based solutions."
+date: "2026-08-14"
+tags: ["RAG", "Caching", "Phase 2"]
+---
+
+import MermaidDiagram from '@/components/mdx/MermaidDiagram';
+
+# Day 35 — Semantic Caching with Redis to Cut Token Costs
+
+Semantic caching stores model responses keyed by semantic fingerprints so that semantically-similar prompts reuse a cached response instead of incurring another model call.
+
+## Why it helps
+
+- Cut repeated token costs on similar queries.
+- Improve latency for high-volume common queries.
+- Provide graceful degradation during provider outages.
+
+## Design considerations
+
+- Choose a fingerprint strategy: truncated embedding hash, nearest-neighbor lookup, or a hybrid with normalized prompts.
+- TTLs: short TTLs for dynamic domains, longer TTLs for static knowledge.
+- Cache warming for known high-traffic prompts.
+
+<MermaidDiagram chart={`
+sequenceDiagram
+	participant User
+	participant App
+	participant Cache
+	participant Model
+
+	User->>App: query
+	App->>Cache: semantic_lookup(key)
+	alt hit
+		Cache-->>App: cached_response
+		App-->>User: cached_response
+	else miss
+		App->>Model: model_call
+		Model-->>App: response
+		App->>Cache: set(key,response)
+		App-->>User: response
+	end
+`} />
+
+## Example implementation
+
+1. Compute an embedding and normalize it (unit length).
+2. Use an ANN index to find near fingerprints; if similarity >= threshold, return cached response.
+3. Otherwise call model and insert the embedding→response mapping into Redis (cache-aside).
+
+```ts
+const key = embeddingHash(embedding);
+const hit = await redis.get(key);
+if (hit) return JSON.parse(hit);
+const resp = await callModel(prompt);
+await redis.set(key, JSON.stringify(resp), { EX: ttl });
+return resp;
+```
+
+## Heuristics
+
+- Use a higher similarity threshold in regulated contexts to avoid incorrect reuse.
+- Record cache hits in metrics and monitor hit-rate vs correctness.
+
+I can add a Redis-backed semantic cache example to this repo that works with your current retrieval pipeline—want me to scaffold it?

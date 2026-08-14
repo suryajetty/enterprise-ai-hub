@@ -1,0 +1,46 @@
+---
+title: "Day 45 — Building a Supervisor Agent with LangGraph"
+description: "A step-by-step guide to creating a supervisor agent using LangGraph patterns and guarantees."
+date: "2026-08-14"
+tags: ["LangGraph", "Agents", "Phase 3"]
+---
+
+import MermaidDiagram from '@/components/mdx/MermaidDiagram';
+
+# Day 45 — Building a Supervisor Agent with LangGraph
+
+Supervisor agents orchestrate sub-agents and tools. LangGraph provides explicit state graphs, which makes supervisor behavior analysable and testable.
+
+## Design steps
+
+1. Define the typed state and allowed transitions.
+2. Implement sub-agent interfaces (RAG, SQL, API tools).
+3. Encode routing logic as conditional edges with guards.
+
+<MermaidDiagram chart={`
+graph TD
+	Entry[Start] --> Supervisor[Supervisor Node]
+	Supervisor --> SQLAgent
+	Supervisor --> RAGAgent
+	SQLAgent --> Formatter
+	RAGAgent --> Formatter
+	Formatter --> End[Finish]
+`} />
+
+## Example state type (pseudo)
+
+```python
+class SupervisorState(TypedDict):
+	user_query: str
+	history: list
+	chosen_tool: Optional[str]
+
+workflow = StateGraph(SupervisorState)
+```
+
+## Testing & safety
+
+- Add step-count guards to prevent runaway loops.
+- Simulate edge cases (ambiguous queries, tool failures) with unit tests.
+
+If you want, I’ll add a minimal LangGraph example into the repo that defines a supervisor and two simple sub-agents so you can run a local simulation.

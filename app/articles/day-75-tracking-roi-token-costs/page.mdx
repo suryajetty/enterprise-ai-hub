@@ -1,0 +1,29 @@
+---
+title: "Day 75 — Tracking ROI: Token Costs vs Business Value"
+description: "How to measure token spend against business outcomes and justify LLM investments."
+date: "2026-08-14"
+tags: ["Cost", "Observability", "Phase 4"]
+---
+
+# Day 75 — Tracking ROI: Token Costs vs Business Value
+
+To justify LLM investments you must connect token spend to measurable business outcomes: conversions, time saved, or incident reductions.
+
+## Cost attribution
+
+- Tag each model call with `feature`, `flow`, and `user_segment` metadata.
+- Aggregate token usage and costs per tag and compare against business KPIs.
+
+## Dashboard metrics
+
+- Cost per assisted conversion
+- Token spend per active user
+- Trend of cost vs value over time (7/30/90-day windows)
+
+## Practical steps
+
+1. Emit structured events for every model call (tokens_in, tokens_out, tags).
+2. Join with business events to compute ROI metrics.
+3. Set budget alarms and automatic throttles for non-essential flows.
+
+I can produce a sample event schema and a small script to compute cost per conversion from your logs—should I add that to the repo?

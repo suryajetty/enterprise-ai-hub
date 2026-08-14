@@ -1,0 +1,50 @@
+---
+title: "Day 40 — Hybrid Search: BM25 + Dense for Corporate Documents"
+description: "Combining BM25 and dense retrieval for accuracy, recall, and enterprise relevancy in corporate search."
+date: "2026-08-14"
+tags: ["Search", "RAG", "Phase 2"]
+---
+
+import MermaidDiagram from '@/components/mdx/MermaidDiagram';
+
+# Day 40 — Hybrid Search: BM25 + Dense for Corporate Documents
+
+Hybrid search combines lexical models (BM25) with dense vector retrieval to achieve high recall and precision across enterprise corpora that contain both technical and natural language content.
+
+## Why hybrid?
+
+- BM25 excels at exact term matches and sparse signals (IDs, codes).
+- Dense retrieval captures semantic intent and paraphrases.
+- Combining both handles both structured and unstructured queries effectively.
+
+## Fusion strategies
+
+1. **Score-level fusion:** normalize BM25 and dense scores and combine by weighted sum.
+2. **Rerank:** use BM25 to retrieve a candidate set and rerank with dense similarity (or vice versa).
+3. **Ensemble:** merge top-k results from both and deduplicate using heuristics.
+
+<MermaidDiagram chart={`
+graph LR
+	Query --> BM25[BM25 Candidate Set]
+	Query --> Dense[Dense Candidate Set]
+	BM25 --> Merge
+	Dense --> Merge
+	Merge --> Rerank[Final Rerank & Dedupe]
+	Rerank --> Results
+`} />
+
+## Practical tips
+
+- Normalize scores before fusion (z-score or min-max) to avoid dominance.
+- Use domain-specific tokenization for BM25 on code or log corpora.
+- Monitor false positives introduced by dense models and tune thresholds per vertical.
+
+## Example: score-level fusion
+
+```py
+bm25_scores = bm25.score(query, docs)
+dense_scores = dense.similarity(query_vec, doc_vecs)
+final = alpha * normalize(bm25_scores) + (1-alpha) * normalize(dense_scores)
+```
+
+If you want, I can add a small benchmark to this repo that runs hybrid retrieval across your corpus and outputs recommended alpha and thresholds.

@@ -1,0 +1,29 @@
+---
+title: "Day 95 — My Biggest Failure Deploying AI to Production"
+description: "A candid post describing a deployment failure, root causes, and lessons learned for engineers."
+date: "2026-08-14"
+tags: ["Postmortem", "Lessons", "Phase 5"]
+---
+
+# Day 95 — My Biggest Failure Deploying AI to Production
+
+This is a condensed postmortem of a deployment that caused significant customer impact due to insufficient guardrails and monitoring.
+
+## What happened
+
+- An automated agent made a high-impact change (billing adjustment) based on an ambiguous instruction.
+- The change propagated to multiple systems before humans noticed.
+
+## Root causes
+
+1. No human-in-the-loop for high-risk actions.
+2. Missing idempotency and unsafe retries.
+3. Insufficient audit trail to roll back quickly.
+
+## Corrective actions
+
+- Introduced mandatory pre-approval for billing adjustments.
+- Added an immutable audit log of prompts, retriever context, and actions.
+- Implemented canary rollouts and immediate rollback playbooks.
+
+The core lesson: treat agents like autonomous services with SRE playbooks. I can expand this into a full postmortem template for your team.

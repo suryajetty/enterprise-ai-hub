@@ -1,0 +1,29 @@
+---
+title: "Day 65 — Evaluating RAG Pipelines (RAGAS Framework)"
+description: "Practical metrics and evaluation frameworks for RAG pipelines using RAGAS."
+date: "2026-08-14"
+tags: ["RAG", "Evaluation", "Phase 4"]
+---
+
+# Day 65 — Evaluating RAG Pipelines (RAGAS Framework)
+
+RAGAS (Retrieval-Augmented Generation Assessment Suite) is a lightweight framework to validate retrieval quality, answer correctness, and end-to-end latency.
+
+## Key metrics
+
+- **Retrieval precision@k** — how often the top-k contains supporting evidence.
+- **Generator fidelity** — factual correctness of model outputs given correct evidence.
+- **Cost per query** — token usage + provider cost.
+
+## Continuous evaluation
+
+- Run nightly synthetic queries and record drift in retrieval quality.
+- Use human-in-the-loop sampling for low-confidence responses.
+
+## Example test flow
+
+1. Seed the test set with known Q/A pairs.
+2. Measure retrieval recall and generator correctness.
+3. Fail the pipeline if recall or fidelity drop below thresholds.
+
+If you want, I can add a small RAGAS test harness into this repo that runs against your article corpus and outputs a daily report.

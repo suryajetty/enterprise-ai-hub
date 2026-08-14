@@ -1,0 +1,37 @@
+---
+title: "Day 50 — Preventing Infinite Loops in Agentic State Machines"
+description: "Patterns to detect and recover from repeating states and runaway agent behavior."
+date: "2026-08-14"
+tags: ["Agents", "LangGraph", "Phase 3"]
+---
+
+## Day 50 — Preventing Infinite Loops in Agentic State Machines
+
+Agentic workflows with recursive calls can enter infinite loops unless guarded by careful engineering. Treat loops as first-class failures and design both detection and recovery.
+
+### Detection patterns
+
+- **Step counters:** abort after N steps and escalate to human review.
+- **State fingerprints:** detect repeating state patterns using hashing.
+- **Cost thresholds:** stop when token or compute cost exceeds budget.
+
+### Recovery actions
+
+1. Rollback to a checkpointed state and retry with modified parameters.
+2. Fallback to a deterministic handler or human-in-the-loop.
+3. Emit a high-severity alert and snapshot execution traces.
+
+### Example: step guard pseudo
+
+```py
+if execution.steps > MAX_STEPS:
+	emit_alert(execution)
+	return fallback_response()
+```
+
+### Test strategies
+
+- Property-based tests that assert termination on random seeds.
+- Integration tests that inject slow or erroneous tool responses.
+
+Guardrails make agents safe and predictable — they are not a development afterthought.

@@ -1,0 +1,62 @@
+---
+title: "Day 21 — Why Your 5-line LangChain Prototype Will Fail in Production"
+description: "Common pitfalls when taking LangChain prototypes into enterprise environments and how to mitigate them."
+date: "2026-08-14"
+tags: ["RAG", "LangChain", "Phase 2"]
+---
+
+import MermaidDiagram from '@/components/mdx/MermaidDiagram';
+
+# Day 21 — Why Your 5-line LangChain Prototype Will Fail in Production
+
+LangChain is excellent for fast prototyping but several gaps commonly break prototypes when they hit production:
+
+## 1) Lack of observability
+
+Prototypes rarely log prompts, retriever hits, or model responses. In production you need a searchable audit trail and metrics for latency, token costs, and retrieval quality.
+
+## 2) Missing authentication & access controls
+
+Prototypes often assume access to data sources. Production demands RBAC, row-level security, and authenticated retriever access.
+
+## 3) No cost controls
+
+Prototypes use a single model call per flow. In production you must implement caching, minibatching, and token-aware rate limits.
+
+## 4) Unvalidated retrievers
+
+Retriever quality can vary wildly. Always evaluate precision@k and implement hybrid reranking or negative sampling tests.
+
+<MermaidDiagram chart={`
+sequenceDiagram
+	participant Client
+	participant App
+	participant Retriever
+	participant LLM
+
+	Client->>App: query
+	App->>Retriever: retrieve(k=10)
+	App->>LLM: prompt + top-k
+	LLM-->>App: response
+	App-->>Client: response
+`} />
+
+## Practical checklist before production
+
+1. Log prompts, model responses, and retriever results.
+2. Add semantic caching and TTLs to reduce token spend.
+3. Implement unit and integration tests for retriever relevance.
+4. Enforce data access controls for sensitive corpora.
+
+## Example mitigation: add a semantic cache
+
+```ts
+// pseudocode: check cache before model call
+const cached = await semanticCache.get(hash(prompt, topK));
+if (cached) return cached;
+const result = await callModel(prompt);
+await semanticCache.set(hash(prompt, topK), result, { ttl: 60*60 });
+return result;
+```
+
+If you'd like, I can convert this checklist into a runnable pre-deployment test suite for your repository.

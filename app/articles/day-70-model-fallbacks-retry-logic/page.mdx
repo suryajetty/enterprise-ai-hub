@@ -1,0 +1,29 @@
+---
+title: "Day 70 — Model Fallbacks and Retry Logic"
+description: "Patterns for graceful degradation, fallbacks, and retries when LLM providers are unavailable."
+date: "2026-08-14"
+tags: ["LLMOps", "Reliability", "Phase 4"]
+---
+
+# Day 70 — Model Fallbacks and Retry Logic
+
+Provider outages and rate limits are a fact of life. Implement multi-provider strategies, circuit breakers, and deterministic fallbacks to keep services available.
+
+## Strategies
+
+- **Provider pool:** maintain multiple providers with health checks and weighted routing.
+- **Circuit breaker:** trip on error-rate or latency and failover to fallback flows.
+- **Deterministic fallback:** for some flows, return cached or heuristic-based responses when models are unavailable.
+
+## Example fallback flow
+
+1. Try primary provider with short timeout.
+2. On timeout or error, record metrics and route to secondary provider.
+3. If all providers fail, return a graceful degraded response and place the request in a retry queue.
+
+## Retry policies
+
+- Use exponential backoff with jitter.
+- Rate-limit retries to avoid amplification.
+
+I can add a provider-chooser module to this repo that implements health checks, weighted routing, and a simple circuit breaker—shall I add it?

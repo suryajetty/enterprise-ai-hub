@@ -1,0 +1,38 @@
+---
+title: "Day 41 — Why the Enterprise Needs Managed Agents, Not Just More Agents"
+description: "Design principles and governance patterns for managed agent fleets in production."
+date: "2026-08-14"
+tags: ["Agents", "LangGraph", "Phase 3"]
+---
+
+import MermaidDiagram from '@/components/mdx/MermaidDiagram';
+
+# Day 41 — Why the Enterprise Needs Managed Agents, Not Just More Agents
+
+An "agent" is more than an LLM call. In production, agents are services with lifecycle, observability, and governance requirements. Managed agents are the operational abstraction that treats agents like first-class, controllable platform resources.
+
+## Core responsibilities of an agent manager
+
+- **Deployment lifecycle:** versioned prompts, model config, and tool bindings.
+- **Observability:** traces for each execution, cost attribution, and error budgets.
+- **Governance:** access controls, prompt approvals, and test suites.
+
+<MermaidDiagram chart={`
+graph LR
+	Platform[Agent Manager] --> AgentA[Agent v1]
+	Platform --> AgentB[Agent v2]
+	AgentA --> Telemetry
+	AgentB --> Telemetry
+`} />
+
+## Operational controls
+
+1. Prompt registry with reviews and CI checks.
+2. Automatic rollback when drift or cost spikes detected.
+3. Canary deployments for new agent versions.
+
+## Example: versioning an agent
+
+Store prompt templates and tool bindings in the repo. The agent manager compiles and pins a bundle of `{model, prompt, retriever-config}` which is deployed as an immutable artifact.
+
+If you'd like, I can scaffold a simple `agent-bundle` directory and a CI job to validate agent behavior before deployment.

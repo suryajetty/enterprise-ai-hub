@@ -1,0 +1,44 @@
+---
+title: "Day 20 — Microservices vs Agentic Nodes"
+description: "Comparing microservice design with agentic compute nodes and the tradeoffs for enterprise systems."
+date: "2026-08-14"
+tags: ["Architecture", "Phase 1", "Microservices"]
+---
+
+import MermaidDiagram from '@/components/mdx/MermaidDiagram';
+
+# Day 20 — Microservices vs Agentic Nodes
+
+Microservices decompose functionality into independently deployable services. Agentic nodes are compute units that encapsulate reasoning, state, and tooling — often driven by LLMs and external retrievers.
+
+## Key differences
+
+- **State:** Microservices prefer explicit, persisted state (DBs). Agentic nodes often hold ephemeral reasoning state and rely on retrievers for context.
+- **Determinism:** Microservices are deterministic; agentic nodes are probabilistic and need confidence and audit traces.
+- **Deployment:** Microservices scale horizontally with stateless instances; agentic nodes require connection to vector stores, prompt stores, and telemetry.
+
+<MermaidDiagram chart={`
+graph TD
+	Client --> MicroserviceA[Microservice A (deterministic)]
+	Client --> AgentNode[Agentic Node (LLM + Tools)]
+	AgentNode --> VectorDB[Vector DB]
+	AgentNode --> Tools[External Tools]
+`} />
+
+## Operational tradeoffs
+
+- **Observability:** Agents require richer traces: prompts, embeddings, retriever hits, model choices.
+- **Cost:** LLM-based nodes have variable costs; microservices have predictable infra costs.
+- **Governance:** Agents must implement prompt versioning, prompt-approval flows, and content redaction.
+
+## Practical hybrid pattern
+
+1. Identify the core deterministic flows (billing, auth) and keep them as microservices.
+2. Encapsulate reasoning-heavy tasks (summarization, policy interpretation) into agentic nodes behind well-defined APIs.
+3. Provide a shared telemetry pipeline that correlates microservice traces with agent traces for end-to-end observability.
+
+## Example: Order Processing
+
+Use a microservice for order validation and persistence. Use an agentic node to interpret ambiguous customer messages, classify intent, and propose transactions. The agent writes suggested actions back to the microservice via an idempotent API.
+
+In the next phase we’ll apply these architectural principles to RAG pipelines and retrieval design.

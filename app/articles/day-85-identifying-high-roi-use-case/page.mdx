@@ -1,0 +1,28 @@
+---
+title: "Day 85 — How to Identify a High-ROI AI Use Case"
+description: "A practical checklist and decision tree for picking high-impact AI initiatives versus standard engineering solutions."
+date: "2026-08-14"
+tags: ["Strategy", "ROI", "Phase 5"]
+---
+
+# Day 85 — How to Identify a High-ROI AI Use Case
+
+Not every problem needs an LLM. Use this quick decision tree to decide whether to invest.
+
+## Heuristic checklist
+
+1. Is the problem semantic or fuzzy (language, intent)? If yes, LLMs help.
+2. Can a deterministic rule or SQL solve it? If yes, prefer simpler solutions.
+3. Does the business value per correct automation exceed the ongoing token cost? If yes, proceed.
+
+## Example signals that favor LLMs
+
+- High variability in inputs and phrasing.
+- Frequent need to synthesize multiple documents.
+- Human reviewers spend >30 minutes per case.
+
+## Quick ROI formula
+
+Estimate: (Time saved per case * cases per month * labor cost) - (monthly token + infra cost) = ROI
+
+I can create a small spreadsheet or script that computes ROI given your team's parameters—want me to add it to the repo?

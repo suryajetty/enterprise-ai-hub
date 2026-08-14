@@ -1,0 +1,29 @@
+---
+title: "Day 55 — Integrating ServiceNow/Jira Tools into Your AI Workflow"
+description: "How to safely integrate ticketing and ITSM tools into agentic workflows for automation and auditability."
+date: "2026-08-14"
+tags: ["Integration", "Agents", "Phase 3"]
+---
+
+## Day 55 — Integrating ServiceNow/Jira Tools into Your AI Workflow
+
+When an agent performs operational tasks (create ticket, update incident), you must guarantee idempotency, auditability, and least-privilege access.
+
+### Best practices
+
+1. **Idempotent APIs:** always send idempotency keys and checkpoints so retries do not duplicate work.
+2. **Scoped service accounts:** grant only the minimal permissions necessary for the agent.
+3. **Audit trail:** log ticket content, who triggered it (agent id + user), and the decision rationale.
+
+### Example flow
+
+1. Agent proposes a change and writes a `proposed_action` record.
+2. Human approves (or automatic guardrails accept) and agent calls Jira/ServiceNow with `idempotency_key`.
+3. System logs response and stores cross-reference IDs.
+
+### Security and rate limits
+
+- Respect rate limits by batching non-urgent updates and using exponential backoff for errors.
+- Rotate service credentials and use short-lived tokens where possible.
+
+If you want, I’ll scaffold a small example function that demonstrates idempotent ticket creation and an approval callback.

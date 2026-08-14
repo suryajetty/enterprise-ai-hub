@@ -1,0 +1,27 @@
+---
+title: "Day 80 — Prompt Versioning as Code"
+description: "Strategies for versioning prompts, A/B testing, and promoting prompt changes safely."
+date: "2026-08-14"
+tags: ["Prompts", "LLMOps", "Phase 4"]
+---
+
+# Day 80 — Prompt Versioning as Code
+
+Treat prompts like application code: store them in the repository, add tests, and promote via CI/CD. This gives you reproducibility and auditability.
+
+## Practices
+
+- **Prompt templates:** store parametrized templates with ids.
+- **Automated tests:** run prompts against canned inputs and assert outputs or embeddings.
+- **Canary rollouts:** deploy prompts to a small percent of traffic and evaluate metrics.
+
+## Example repo layout
+
+- `prompts/checkout/prompt_v1.txt`
+- `prompts/checkout/metadata.yaml` (author, version, tests)
+
+## A/B testing
+
+Use prompt ids in logs to compare downstream metrics (accuracy, conversion) across prompt versions.
+
+If you want, I can add a `prompts/` folder to the repo and a CI job that runs prompt smoke tests before merging.

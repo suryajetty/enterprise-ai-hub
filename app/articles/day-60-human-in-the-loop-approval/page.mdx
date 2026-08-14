@@ -1,0 +1,32 @@
+---
+title: "Day 60 — Human-in-the-Loop (HITL) Approval Patterns"
+description: "Design patterns for safe human approvals, escalation, and audit in agentic systems."
+date: "2026-08-14"
+tags: ["HITL", "Safety", "Phase 3"]
+---
+
+# Day 60 — Human-in-the-Loop (HITL) Approval Patterns
+
+Human-in-the-loop is essential when agentic decisions have high business impact or regulatory risk. HITL should be a first-class control in any agentic workflow.
+
+## Patterns
+
+- **Pre-approval:** hold actions until a human approves (use for high-risk tasks).
+- **Post-hoc review:** perform action immediately but queue the decision for review and reversal if needed.
+- **Consensus:** require multiple reviewers for sensitive actions.
+
+## UX considerations
+
+Design approvals to minimize reviewer load: show the short rationale, suggested action, evidence (retriever hits), and a one-click approve/deny.
+
+## Example flow
+
+1. Agent generates a proposal and sets `risk_score`.
+2. If `risk_score` > threshold, route to a human approver UI with conversation context.
+3. On approval, the agent executes and logs the action with the approver ID.
+
+## Auditability
+
+Record the prompt, retriever context, decision rationale, and reviewer verdicts. Store these in an immutable log for compliance.
+
+I can scaffold a minimal approver UI and the backend webhook that accepts reviewer decisions—want me to add it?
